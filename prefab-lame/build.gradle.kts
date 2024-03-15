@@ -10,13 +10,6 @@ android {
     namespace = "io.github.byhook.prefab.lame"
     compileSdk = 34
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
-
     defaultConfig {
         minSdk = 21
 
@@ -49,19 +42,21 @@ dependencies {
 }
 
 
-
-tasks.register<Exec>("setupPrefab") {
+tasks.register<Exec>("buildPrefab") {
     val targetFile = File(project.projectDir, "build_prefab_v2.sh")
-    println("setupPrefab ===========================>${targetFile.exists()}")
+    println("buildPrefab ===========================>${targetFile.exists()}")
     commandLine = mutableListOf("sh", targetFile.absolutePath)
 }
 
-tasks.register("buildPrefab") {
-    println("buildPrefab ===========================>")
+tasks.register("buildArtifact") {
+    dependsOn(tasks.getByName("buildPrefab"))
+    println("buildArtifact ===========================>")
+    val targetFile = File(rootDir, "build/outputs/lame-3.100.0.aar")
+    outputs.file(targetFile.absolutePath)
 }
 
 tasks.withType<KotlinCompile> {
-    dependsOn(tasks.getByName("buildPrefab"), tasks.getByName("setupPrefab"))
+    //dependsOn(tasks.getByName("buildPrefab"))
 }
 
 publishing {
@@ -71,7 +66,7 @@ publishing {
             artifactId = "prefab-lame"
             version = "1.0.0"
             afterEvaluate {
-                from(components["release"])
+                artifact(tasks.named("buildArtifact"))
             }
         }
     }
