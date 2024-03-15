@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "prefab-lame"
 include(":app")
- 
+include(":prefab-lame")
