@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -44,6 +46,22 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+
+
+tasks.register<Exec>("setupPrefab") {
+    val targetFile = File(project.projectDir, "build_prefab_v2.sh")
+    println("setupPrefab ===========================>${targetFile.exists()}")
+    commandLine = mutableListOf("sh", targetFile.absolutePath)
+}
+
+tasks.register("buildPrefab") {
+    println("buildPrefab ===========================>")
+}
+
+tasks.withType<KotlinCompile> {
+    dependsOn(tasks.getByName("buildPrefab"), tasks.getByName("setupPrefab"))
 }
 
 publishing {
