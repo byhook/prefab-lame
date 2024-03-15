@@ -1,11 +1,19 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("maven-publish")
 }
 
 android {
     namespace = "io.github.byhook.prefab.lame"
     compileSdk = 34
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 
     defaultConfig {
         minSdk = 21
@@ -36,4 +44,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "io.github.byhook"
+            artifactId = "prefab-lame"
+            version = "1.0.0"
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
