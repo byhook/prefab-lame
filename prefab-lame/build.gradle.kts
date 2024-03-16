@@ -45,7 +45,7 @@ dependencies {
 tasks.register<Exec>("buildPrefab") {
     val targetFile = File(project.projectDir, "build_prefab_v2.sh")
     println("buildPrefab ===========================>${targetFile.exists()}")
-    commandLine = mutableListOf("sh", targetFile.absolutePath)
+    commandLine = mutableListOf("bash", targetFile.absolutePath)
 }
 
 tasks.register("buildArtifact") {

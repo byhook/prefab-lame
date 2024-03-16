@@ -9,10 +9,13 @@
 # 在M1的MacBookPro上 x86构建会报错 用ndk22版本正常
 # 在ubuntu上面 ndk25 构建正常
 
-#NDK_ROOT=~/Library/android/sdk/ndk/18.1.5063045
-NDK_ROOT=~/Library/android/sdk/ndk/22.1.7171670
 
-echo "setup-ndk-env abi: "$1
+#NDK_ROOT=~/Library/android/sdk/ndk/18.1.5063045
+NDK_ROOT=$ANDROID_HOME/ndk/25.2.9519653
+
+ls -l ${$ANDROID_HOME}/ndk
+
+echo "setup-ndk-env ${NDK_ROOT} abi: "$1
 
 #校验当前操作系统-目前只支持linux和macOS
 OS_NAME="$(uname -s | tr 'A-Z' 'a-z')"

@@ -1,2 +1,6 @@
 jdk:
-  - openjdk17
+  - openjdk8
+before_install:
+  - yes | sdkmanager --uninstall "ndk-bundle" | sdkmanager --install "ndk;25.2.9519653"
+  - sdk install java 17.0.9-oracle
+  - sdk use java 17.0.9-oracle
