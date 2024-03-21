@@ -1,4 +1,11 @@
 pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == "io.github.byhook.prefab") {
+                useModule("com.github.byhook:prefab-plugin:${requested.version}")
+            }
+        }
+    }
     repositories {
         mavenLocal()
         maven { url = uri("https://jitpack.io") }

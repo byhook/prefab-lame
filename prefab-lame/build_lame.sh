@@ -43,17 +43,15 @@ function build_library {
     $STRIP -s $BUILD_DIR/libs/$ABI/libmp3lame.so
 }
 
-# 目前在M1的
+#ABI_LIST=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")
+#HOST_LIST=("aarch64-linux-android" "armv7a-linux-androideabi" "x86_64-linux-android" "i686-linux-android")
 
-ABI_LIST=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")
-HOST_LIST=("aarch64-linux-android" "armv7a-linux-androideabi" "x86_64-linux-android" "i686-linux-android")
+ABI_LIST="arm64-v8a armeabi-v7a x86_64 x86"
+abiArray=(${ABI_LIST// / })
 
-# ABI_LIST=("x86_64")
-# HOST_LIST=("x86_64-linux-android")
-
-for((index=0;index<${#ABI_LIST[@]};index++));
+for currentAbi in ${abiArray[@]}
 do
-    source $CURRENT_DIR/../setup-ndk-env.sh ${ABI_LIST[index]}
-    build_library ${ABI_LIST[index]} ${HOST_LIST[index]}
-    echo $index ${ABI_LIST[index]}
+   echo $currentAbi
+   source $CURRENT_DIR/../setup-ndk-env.sh $currentAbi
+   build_library $currentAbi $TOOL_NAME_BASE
 done

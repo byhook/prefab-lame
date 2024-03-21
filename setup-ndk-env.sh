@@ -3,19 +3,28 @@
 #参考文档
 #https://developer.android.com/ndk/guides/other_build_systems?hl=zh-cn#autoconf
 
-
 # 特别注意：
 # WSL2上 ndk23及以上会报错 checking whether the C compiler works... no
 # 在M1的MacBookPro上 x86构建会报错 用ndk22版本正常
 # 在ubuntu上面 ndk25 构建正常
 
-
 #NDK_ROOT=~/Library/android/sdk/ndk/18.1.5063045
-NDK_ROOT=$ANDROID_HOME/ndk/25.2.9519653
-
-ls -l ${$ANDROID_HOME}/ndk
+#NDK_ROOT=$ANDROID_HOME/ndk/25.2.9519653
+NDK_ROOT=$ANDROID_HOME/ndk/22.1.7171670
 
 echo "setup-ndk-env ${NDK_ROOT} abi: "$1
+
+# Android NDK的版本号由三部分组成：主版本号、次版本号和修订版本号。
+# 例如，中的主版本号为21，次版本号为3，修订版本号为6528147。
+# Android NDK的版本号通常与对应的Android SDK版本号相对应，以确保NDK的兼容性。
+#25.2.9519653
+NDK_VERSION=`sed '/^Pkg.Revision = /!d;s/.*=//' $NDK_ROOT/source.properties`
+ndkVerArray=(${NDK_VERSION//./ })
+echo "ndkVersion:$NDK_VERSION"
+
+export NDK_MAJOR_VERSION=${ndkVerArray[0]}
+export NDK_MINOR_VERSION=${ndkVerArray[1]}
+export NDK_REVISION_VERSION=${ndkVerArray[2]}
 
 #校验当前操作系统-目前只支持linux和macOS
 OS_NAME="$(uname -s | tr 'A-Z' 'a-z')"
@@ -48,20 +57,27 @@ function export_env_new_target {
     case $TARGET_ABI in
         arm64-v8a)
             TOOLCHAIN_BASE=aarch64-linux-android
+            TOOL_NAME_BASE=aarch64-linux-android
         ;;
         armeabi-v7a)
             TOOLCHAIN_BASE=armv7a-linux-androideabi
+            TOOL_NAME_BASE=armv7a-linux-androideabi
         ;;
         x86_64)
             TOOLCHAIN_BASE=x86_64-linux-android
+            TOOL_NAME_BASE=x86_64-linux-android
         ;;
         x86)
             TOOLCHAIN_BASE=i686-linux-android
+            TOOL_NAME_BASE=i686-linux-android
         ;;
         *)
             echo "Unsupported ABI."$TARGET_ABI
         ;;
     esac
+    #导出环境变量
+    export TOOLCHAIN_BASE=$TOOLCHAIN_BASE
+    export TOOL_NAME_BASE=$TOOL_NAME_BASE
 }
 
 function export_env_new {
@@ -116,6 +132,9 @@ function export_env_old_target {
             exit
         ;;
     esac
+    #导出环境变量
+    export TOOLCHAIN_BASE=$TOOLCHAIN_BASE
+    export TOOL_NAME_BASE=$TOOL_NAME_BASE
 }
 
 function export_env_old {
