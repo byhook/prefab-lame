@@ -1,5 +1,11 @@
 #!/bin/sh
 
+#例如："arm64-v8a armeabi-v7a x86_64 x86"
+
+echo "TARGET_ABI_LIST:"$TARGET_ABI_LIST
+echo "NDK_VERSION:"$NDK_VERSION
+
+#获取当前库目录
 CURRENT_DIR=$(pwd)
 BUILD_DIR=$CURRENT_DIR/build
 SOURCE_CODE_DIR=$BUILD_DIR/lame-3.100
@@ -46,8 +52,7 @@ function build_library {
 #ABI_LIST=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")
 #HOST_LIST=("aarch64-linux-android" "armv7a-linux-androideabi" "x86_64-linux-android" "i686-linux-android")
 
-ABI_LIST="arm64-v8a armeabi-v7a x86_64 x86"
-abiArray=(${ABI_LIST// / })
+abiArray=(${TARGET_ABI_LIST// / })
 
 for currentAbi in ${abiArray[@]}
 do

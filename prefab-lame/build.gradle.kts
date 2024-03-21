@@ -1,3 +1,6 @@
+import io.github.byhook.prefab.extension.PrefabLibraryType
+import org.jetbrains.kotlin.fir.declarations.builder.buildScript
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -40,7 +43,16 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
+val targetAbiList by lazy {
+    mutableListOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+}
+
 tasks.register<Exec>("crossCompile") {
+    //配置环境变量-设置构建目标的abi列表
+    environment["TARGET_ABI_LIST"] = targetAbiList.joinToString(" ")
+    //指定NDK版本，例如：25.2.9519653 / 22.1.7171670
+    environment["NDK_VERSION"] = targetAbiList.joinToString("22.1.7171670")
+    //直接交叉编译脚本
     val targetFile = File(project.projectDir, "build_lame.sh")
     commandLine = mutableListOf("bash", targetFile.absolutePath)
 }
@@ -63,7 +75,7 @@ generatePrefab {
     //指定预构建库的版本号
     prefabVersion = "3.100.0"
     //预构建库支持abi的列表
-    abiList = mutableListOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+    abiList = targetAbiList
     //生成的aar文件里包含的清单文件
     manifestFile = layout.projectDirectory
         .dir("src")
@@ -71,13 +83,8 @@ generatePrefab {
         .file("AndroidManifest.xml")
         .asFile
     //包含的库详情
-    module("lame.so", false) {
-        this.libraryName = "libmp3lame"
-        this.libraryFileName = "libmp3lame.so"
-    }
-    module("lame.a", true) {
-        this.libraryName = "libmp3lame"
-        this.libraryFileName = "libmp3lame.a"
+    module("lame", "mp3lame", PrefabLibraryType.ALL) {
+        includeSubDirName = "lame"
     }
 }
 
@@ -86,7 +93,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "io.github.byhook"
             artifactId = "prefab-lame"
-            version = "3.100.0.5"
+            version = "3.100.0.7"
             afterEvaluate {
                 artifact(tasks.named("generatePrefabTask"))
             }
